@@ -1,8 +1,24 @@
 package edu.jhu.cvrg.liferay.authentication;
+/*
+Copyright 2012 Johns Hopkins University Institute for Computational Medicine
 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+/**
+ * @author Chris Jurado
+ */
 import java.util.Locale;
 import java.util.Map;
-import java.util.Properties;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
@@ -50,19 +66,15 @@ public class GlobusNexusAuthenticator implements Authenticator{
 				user = UserLocalServiceUtil.getUserByScreenName(companyId, screenName);
 			} catch (PortalException e) {
 				if(user == null){
-					System.out.println("Caught Portal Exception and user is null");
 					user = createNewUser(authenticator.getUserEmail(), authenticator.getUserFullname().split(" "), companyId);
 				}
 				e.printStackTrace();
 			} catch (SystemException e) {
-				System.out.println("Caught System Exception");
 				e.printStackTrace();
 			}
-			System.out.println("Returning success");
 			return SUCCESS;
 		}
 		else{
-			System.out.println("Returning failure");
 			return FAILURE;
 		}
 	}
@@ -85,12 +97,10 @@ public class GlobusNexusAuthenticator implements Authenticator{
 	}
 	
 	private User createNewUser(String userEmail, String[] userName, long companyId){
-		
-		Properties props = new Properties();
+
 		String creatingUserProperty = null;
 
         creatingUserProperty = PropsUtil.get("LIFERAY_ADMIN_USER");
-		
 		
 		User creatingUser = null;
 		User newUser = null;
@@ -105,10 +115,8 @@ public class GlobusNexusAuthenticator implements Authenticator{
 
 			e.printStackTrace();
 		} catch (SystemException e) { 
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		
+		}		
 		return newUser;
 	}
 }
