@@ -1,0 +1,2 @@
+This file is to force GitHub to preserve this file structure to avoid build errors 
+when the project is downloaded into an SDK.
