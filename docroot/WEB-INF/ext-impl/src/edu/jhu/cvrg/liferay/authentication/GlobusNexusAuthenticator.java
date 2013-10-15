@@ -63,11 +63,13 @@ public class GlobusNexusAuthenticator implements Authenticator{
 
 		try {
 			url = PrefsPropsUtil.getString("globus.url");
+			System.out.println("Using Globus URL " + url);
 		} catch (SystemException e1) {
 			e1.printStackTrace();
+			System.out.println("No Globus URL found.  Relying on default.");
 		}
 		
-		String[] args = { url, screenName, password };
+		String[] args = { screenName, password, url };
 		
 		if (authenticator.authenticate(args, AuthenticationMethod.GLOBUS_REST)) {
 
