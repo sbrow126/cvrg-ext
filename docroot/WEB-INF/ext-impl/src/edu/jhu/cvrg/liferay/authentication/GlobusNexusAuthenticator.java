@@ -27,6 +27,7 @@ import com.liferay.portal.security.auth.AuthException;
 import com.liferay.portal.security.auth.Authenticator;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.UserLocalServiceUtil;
+import com.liferay.portal.util.PrefsPropsUtil;
 import com.liferay.portal.util.PropsUtil;
 
 import edu.jhu.cvrg.utilities.authentication.AuthenticationMethod;
@@ -58,8 +59,16 @@ public class GlobusNexusAuthenticator implements Authenticator{
 
 		MainAuthenticator authenticator = new MainAuthenticator();
 		User user = null;
+		String url = "";
 
-		String[] args = { screenName, password };
+		try {
+			url = PrefsPropsUtil.getString("globus.url");
+		} catch (SystemException e1) {
+			e1.printStackTrace();
+		}
+		
+		String[] args = { url, screenName, password };
+		
 		if (authenticator.authenticate(args, AuthenticationMethod.GLOBUS_REST)) {
 
 			try {
