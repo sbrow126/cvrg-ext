@@ -20,6 +20,7 @@ limitations under the License.
 import java.util.Locale;
 import java.util.Map;
 
+import com.liferay.portal.NoSuchUserException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.model.User;
@@ -75,10 +76,9 @@ public class GlobusNexusAuthenticator implements Authenticator{
 
 			try {
 				user = UserLocalServiceUtil.getUserByScreenName(companyId, screenName);
+			} catch (NoSuchUserException e){
+				user = createNewUser(authenticator.getUserEmail(), authenticator.getUserFullname().split(" "), companyId);
 			} catch (PortalException e) {
-				if(user == null){
-					user = createNewUser(authenticator.getUserEmail(), authenticator.getUserFullname().split(" "), companyId);
-				}
 				e.printStackTrace();
 			} catch (SystemException e) {
 				e.printStackTrace();
@@ -111,7 +111,11 @@ public class GlobusNexusAuthenticator implements Authenticator{
 
 		String creatingUserProperty = null;
 
-        creatingUserProperty = PropsUtil.get("LIFERAY_ADMIN_USER");
+        try {
+			creatingUserProperty = PrefsPropsUtil.getString("liferay.admin.user");
+		} catch (SystemException e1) {
+			e1.printStackTrace();
+		}
 		
 		User creatingUser = null;
 		User newUser = null;

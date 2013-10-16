@@ -58,7 +58,7 @@ institution = inst;
 	
 		<aui:fieldset>
 			<aui:input class="lfr-input-text-container" disabled="true" label="Name:" name="name" value="<%= user.getFullName() %>"/>
-			<aui:input class="lfr-input-text-container" disabled="true" label="Institution:" name="institution" type="text" value="<%= institution %>"/>
+			<aui:input class="lfr-input-text-container" label="Institution:" name="institution" type="text" value="<%= institution %>"/>
 			<aui:input class="lfr-input-text-container" label="Department:" name="department" type="text" value="<%= department %>"/>
 			<aui:input class="lfr-input-textarea-container" label="What brings you to the CVRG Portal?" name="reason" style="width:300px; height:50px;" type="textarea" value="<%= reason %>"/>
 			<aui:input class="lfr-input-text-container" label="(Optional) Supporting Research Grant #:" name="grant" type="text" value="<%= grant %>"/>
