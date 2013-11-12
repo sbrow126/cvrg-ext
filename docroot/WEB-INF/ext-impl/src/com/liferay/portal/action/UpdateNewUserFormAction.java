@@ -57,8 +57,6 @@ public class UpdateNewUserFormAction extends Action{
 		
 		try{
 			if(department.equals("") || reason.equals("")){
-				System.out.println("Missing value. reason = " + reason);
-				System.out.println("Missing value. department = " + department);
 				throw new NewUserMissingFieldException();
 			}
 		}

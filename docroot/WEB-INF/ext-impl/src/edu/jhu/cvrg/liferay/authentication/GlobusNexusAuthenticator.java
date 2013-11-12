@@ -20,6 +20,8 @@ limitations under the License.
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.liferay.portal.NoSuchUserException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
@@ -28,22 +30,28 @@ import com.liferay.portal.security.auth.AuthException;
 import com.liferay.portal.security.auth.Authenticator;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.UserLocalServiceUtil;
-import com.liferay.portal.util.PrefsPropsUtil;
-import com.liferay.portal.util.PropsUtil;
+import com.liferay.portal.util.PropsValues;
 
 import edu.jhu.cvrg.utilities.authentication.AuthenticationMethod;
 import edu.jhu.cvrg.utilities.authentication.MainAuthenticator;
 
 public class GlobusNexusAuthenticator implements Authenticator{
+	
+	static org.apache.log4j.Logger logger = Logger.getLogger(GlobusNexusAuthenticator.class);
 
 	@Override
 	public int authenticateByEmailAddress(long companyId, String emailAddress,
 			String password, Map<String, String[]> headerMap,
 			Map<String, String[]> parameterMap) throws AuthException {
+		
+		logger.info("Authenticating by email");
 			
 		try {
 			User user = UserLocalServiceUtil.getUserByEmailAddress(companyId, emailAddress);
 			return authenticateByScreenName(companyId, user.getScreenName(), password, headerMap, null);
+		} catch (NoSuchUserException e){
+			logger.error("User not found for E-mail address " + emailAddress);
+			return FAILURE;
 		} catch (PortalException e) {
 			e.printStackTrace();
 			return DNE;
@@ -57,23 +65,35 @@ public class GlobusNexusAuthenticator implements Authenticator{
 	public int authenticateByScreenName(long companyId, String screenName,
 			String password, Map<String, String[]> headerMap,
 			Map<String, String[]> parameterMap) throws AuthException {
+		
+		logger.info("Authenticating by screenName");
 
 		MainAuthenticator authenticator = new MainAuthenticator();
 		User user = null;
 		String url = "";
+		String community = "";
 
 		try {
-			url = PrefsPropsUtil.getString("globus.url");
-			System.out.println("Using Globus URL " + url);
-		} catch (SystemException e1) {
-			e1.printStackTrace();
-			System.out.println("No Globus URL found.  Relying on default.");
+			url = PropsValues.GLOBUS_LINK;
+			logger.info("Using Globus URL " + url);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.warn("No Globus URL found.  Relying on default.");
 		}
 		
-		String[] args = { screenName, password, url };
+		try {
+			community = PropsValues.GLOBUS_COMMUNITY;
+			logger.info("Using Globus community " + community);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.warn("No Globus community found.  Relying on default.");
+		}
+			
+		String[] args = { screenName, password, url, community };
 		
+		logger.info("Ready to authenticate:");
 		if (authenticator.authenticate(args, AuthenticationMethod.GLOBUS_REST)) {
-
+			logger.info("It worked.");
 			try {
 				user = UserLocalServiceUtil.getUserByScreenName(companyId, screenName);
 			} catch (NoSuchUserException e){
@@ -83,9 +103,11 @@ public class GlobusNexusAuthenticator implements Authenticator{
 			} catch (SystemException e) {
 				e.printStackTrace();
 			}
+			logger.info("Authentication successful.");
 			return SUCCESS;
 		}
 		else{
+			logger.info("Authentication failed.");
 			return FAILURE;
 		}
 	}
@@ -98,6 +120,9 @@ public class GlobusNexusAuthenticator implements Authenticator{
 		try {
 			User user = UserLocalServiceUtil.getUserById(companyId, userId);
 			return authenticateByScreenName(companyId, user.getScreenName(), password, headerMap, null);
+		} catch (NoSuchUserException e){
+			logger.error("User not found for user ID " + userId);
+			return FAILURE;
 		} catch (PortalException e) {
 			e.printStackTrace();
 			return DNE;
@@ -112,8 +137,8 @@ public class GlobusNexusAuthenticator implements Authenticator{
 		String creatingUserProperty = null;
 
         try {
-			creatingUserProperty = PrefsPropsUtil.getString("liferay.admin.user");
-		} catch (SystemException e1) {
+			creatingUserProperty = PropsValues.LIFERAY_ADMIN_USER;
+		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
 		

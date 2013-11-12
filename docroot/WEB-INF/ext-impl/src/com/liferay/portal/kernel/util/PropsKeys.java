@@ -2337,5 +2337,10 @@ public interface PropsKeys {
 
 	//CRJ 7/11/13 JHU
 	public static final String LIFERAY_ADMIN_USER = "liferay.admin.user";
+	
+	//CRJ 10/31/13
+	public static final String GLOBUS_LINK = "globus.url";
+	public static final String GLOBUS_COMMUNITY = "globus.community";
+	public static final String GLOBUS_ACCOUNT_URL = "globus.account.url";
 
 }

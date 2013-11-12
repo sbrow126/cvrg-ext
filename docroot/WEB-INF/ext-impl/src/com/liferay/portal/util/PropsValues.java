@@ -1730,6 +1730,10 @@ public class PropsValues {
 
 	//CRJ 7/11/13 JHU
 	public static final String LIFERAY_ADMIN_USER = PropsUtil.get(PropsKeys.LIFERAY_ADMIN_USER);
+	//CRJ 10/31/14
+	public static final String GLOBUS_LINK = PropsUtil.get(PropsKeys.GLOBUS_LINK);
+	public static final String GLOBUS_COMMUNITY = PropsUtil.get(PropsKeys.GLOBUS_COMMUNITY);
+	public static final String GLOBUS_ACCOUNT_URL = PropsUtil.get(PropsKeys.GLOBUS_ACCOUNT_URL);
 
 	static {
 		if (!LAYOUT_USER_PRIVATE_LAYOUTS_ENABLED) {
