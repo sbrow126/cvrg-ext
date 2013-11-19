@@ -69,13 +69,14 @@ public class GlobusNexusAuthenticator implements Authenticator{
 		logger.info("Authenticating by screenName");
 
 		MainAuthenticator authenticator = new MainAuthenticator();
+		
+		@SuppressWarnings("unused")
 		User user = null;
 		String url = "";
 		String community = "";
 
 		try {
 			url = PropsValues.GLOBUS_LINK;
-			logger.info("Using Globus URL " + url);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.warn("No Globus URL found.  Relying on default.");
@@ -91,9 +92,7 @@ public class GlobusNexusAuthenticator implements Authenticator{
 			
 		String[] args = { screenName, password, url, community };
 		
-		logger.info("Ready to authenticate:");
 		if (authenticator.authenticate(args, AuthenticationMethod.GLOBUS_REST)) {
-			logger.info("It worked.");
 			try {
 				user = UserLocalServiceUtil.getUserByScreenName(companyId, screenName);
 			} catch (NoSuchUserException e){

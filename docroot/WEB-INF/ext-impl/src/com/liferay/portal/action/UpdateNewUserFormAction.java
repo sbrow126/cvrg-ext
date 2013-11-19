@@ -70,7 +70,6 @@ public class UpdateNewUserFormAction extends Action{
 		newUser.getExpandoBridge().setAttribute("Reason", reason);
 		newUser.getExpandoBridge().setAttribute("Grant Number", grant);
 		
-		
 		newUser.getExpandoBridge().setAttribute("NewUserFormComplete", true);
 		
 		return mapping.findForward(ActionConstants.COMMON_REFERER);

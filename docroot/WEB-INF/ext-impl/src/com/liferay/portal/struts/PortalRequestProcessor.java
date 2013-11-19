@@ -1068,11 +1068,9 @@ public class PortalRequestProcessor extends TilesRequestProcessor {
 	//CRJ 7/11/13 JHU
 	private static String _PATH_PORTAL_NEW_USER_FORM = "/portal/new_user_form";
 	
-	private static String _PATH_PORTAL_UPDATE_NEW_USER_FORM = 
-		"/portal/update_new_user_form";
+	private static String _PATH_PORTAL_UPDATE_NEW_USER_FORM = "/portal/update_new_user_form";
 
-	private static Log _log = LogFactoryUtil.getLog(
-		PortalRequestProcessor.class);
+	private static Log _log = LogFactoryUtil.getLog(PortalRequestProcessor.class);
 
 	private Set<String> _lastPaths;
 	private Set<String> _publicPaths;
