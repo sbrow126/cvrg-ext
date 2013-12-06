@@ -85,6 +85,8 @@ import com.liferay.portlet.RenderRequestImpl;
 import com.liferay.portlet.RenderResponseFactory;
 import com.liferay.portlet.RenderResponseImpl;
 
+import edu.jhu.cvrg.utilities.setup.UserFieldCreator;
+
 import java.io.IOException;
 
 import java.util.Date;
@@ -740,6 +742,7 @@ public class PortalRequestProcessor extends TilesRequestProcessor {
 		//CRJ 7/11/13 JHU
 		
 		if(path.equals(_PATH_PORTAL_UPDATE_NEW_USER_FORM)){
+			UserFieldCreator.createCustomFields();
 			return path;
 		}
 		

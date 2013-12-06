@@ -28,12 +28,20 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 
 import com.liferay.portal.NewUserMissingFieldException;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.struts.ActionConstants;
 import com.liferay.portal.util.PortalUtil;
+import com.liferay.portlet.expando.model.ExpandoColumn;
+import com.liferay.portlet.expando.model.ExpandoTable;
+import com.liferay.portlet.expando.model.ExpandoValue;
+import com.liferay.portlet.expando.service.ExpandoColumnLocalServiceUtil;
+import com.liferay.portlet.expando.service.ExpandoTableLocalServiceUtil;
+import com.liferay.portlet.expando.service.ExpandoValueLocalServiceUtil;
 
 public class UpdateNewUserFormAction extends Action{
 	
@@ -69,10 +77,79 @@ public class UpdateNewUserFormAction extends Action{
 		newUser.getExpandoBridge().setAttribute("Department", department);
 		newUser.getExpandoBridge().setAttribute("Reason", reason);
 		newUser.getExpandoBridge().setAttribute("Grant Number", grant);
-		
 		newUser.getExpandoBridge().setAttribute("NewUserFormComplete", true);
 		
+		long tableId = getTableId();
+		long classNameId = getClassNameId();
+		long classPk = newUser.getUserId();
+		
+		storeValue(getColumnId(tableId, "Institution"), institution, classNameId, tableId, classPk);
+		storeValue(getColumnId(tableId, "Department"), department, classNameId, tableId, classPk);
+		storeValue(getColumnId(tableId, "Reason"), reason, classNameId, tableId, classPk);
+		storeValue(getColumnId(tableId, "Grant Number"), grant, classNameId, tableId, classPk);
+		storeValue(getColumnId(tableId, "NewUserFormComplete"), "true", classNameId, tableId, classPk);
+
+
+		
 		return mapping.findForward(ActionConstants.COMMON_REFERER);
+	}
+	
+	private void storeValue(long columnId, String value, long classNameId, long tableId, long classPK){
+		ExpandoValue expandoValue = null;
+		
+		try {
+			expandoValue = ExpandoValueLocalServiceUtil.addValue(classNameId, tableId, columnId, classPK, value);
+		} catch (PortalException e) {
+			e.printStackTrace();
+		} catch (SystemException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private long getColumnId(long tableId, String columnName){
+		long columnId = 0L;
+		try {
+			ExpandoColumn column = ExpandoColumnLocalServiceUtil.getColumn(tableId, columnName);
+			columnId = column.getColumnId();
+		} catch (SystemException e) {
+			e.printStackTrace();
+		}
+		
+		return columnId;
+	}
+	
+	private long getClassNameId(){
+		long companyId = PortalUtil.getDefaultCompanyId();
+		long classNameId = 0L;
+		ExpandoTable table = null;
+		try {
+			table = ExpandoTableLocalServiceUtil.getTable(companyId, User.class.getName(), "CUSTOM_FIELDS");
+			classNameId = table.getClassNameId();
+		} catch (PortalException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SystemException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return classNameId;
+	}
+	
+	private long getTableId(){
+		long companyId = PortalUtil.getDefaultCompanyId();
+		long tableId = 0L;
+		ExpandoTable table = null;
+		try {
+			table = ExpandoTableLocalServiceUtil.getTable(companyId, User.class.getName(), "CUSTOM_FIELDS");
+			tableId = table.getTableId();
+		} catch (PortalException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SystemException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return tableId;
 	}
 
 	public String getInstitution() {
