@@ -96,7 +96,7 @@ public class GlobusNexusAuthenticator implements Authenticator{
 			try {
 				user = UserLocalServiceUtil.getUserByScreenName(companyId, screenName);
 			} catch (NoSuchUserException e){
-				user = createNewUser(authenticator.getUserEmail(), authenticator.getUserFullname().split(" "), companyId);
+				user = createNewUser(authenticator.getUserEmail(), screenName, authenticator.getUserFullname().split(" "), companyId);
 			} catch (PortalException e) {
 				e.printStackTrace();
 			} catch (SystemException e) {
@@ -131,7 +131,7 @@ public class GlobusNexusAuthenticator implements Authenticator{
 		}
 	}
 	
-	private User createNewUser(String userEmail, String[] userName, long companyId){
+	private User createNewUser(String userEmail, String screenName, String[] userName, long companyId){
 
 		String creatingUserProperty = null;
 
@@ -146,7 +146,7 @@ public class GlobusNexusAuthenticator implements Authenticator{
 		try {
 			creatingUser = UserLocalServiceUtil.getUserByEmailAddress(companyId, creatingUserProperty);
 				
-			UserLocalServiceUtil.addUser(creatingUser.getUserId(), companyId, false, "test", "test", false, (userName[0] + userName[1]), userEmail, 0L, "", Locale.US,
+			UserLocalServiceUtil.addUser(creatingUser.getUserId(), companyId, false, "test", "test", false, screenName, userEmail, 0L, "", Locale.US,
 					userName[0], "", userName[1], 0, 0, false, 0, 1,1970, "User", null, null, null,
 					null, false, new ServiceContext());
 		
