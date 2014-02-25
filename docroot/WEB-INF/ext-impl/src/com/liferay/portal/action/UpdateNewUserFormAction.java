@@ -31,6 +31,8 @@ import com.liferay.portal.NewUserMissingFieldException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.servlet.SessionErrors;
+import com.liferay.portal.kernel.struts.BaseStrutsAction;
+import com.liferay.portal.kernel.struts.StrutsAction;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.UserLocalServiceUtil;
@@ -49,11 +51,17 @@ public class UpdateNewUserFormAction extends Action{
 	protected String department;
 	protected String reason;
 	protected String grant;
+	
+	public UpdateNewUserFormAction(){
+		
+	}
 
-	public ActionForward execute(
-			ActionMapping mapping, ActionForm form, HttpServletRequest request,
-			HttpServletResponse response)
-		throws Exception {
+	public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)  
+			throws Exception{
+//	@Override
+//	public String execute(StrutsAction originalStrutsAction, HttpServletRequest request, HttpServletResponse response)
+//		throws Exception {
+		System.out.println("Submitting form");
 	
 		long userId = PortalUtil.getUserId(request);
 		User newUser = UserLocalServiceUtil.getUser(userId);
@@ -71,7 +79,10 @@ public class UpdateNewUserFormAction extends Action{
 		catch(NewUserMissingFieldException e){
 			SessionErrors.add(request, e.getClass().getName());
 			return mapping.findForward("portal.new_user_form");		
+//			return "portal/new_user_form";
 		}
+		
+		System.out.println("Updating user fields...");
 		
 		newUser.getExpandoBridge().setAttribute("Institution", institution);
 		newUser.getExpandoBridge().setAttribute("Department", department);
@@ -89,14 +100,14 @@ public class UpdateNewUserFormAction extends Action{
 		storeValue(getColumnId(tableId, "Grant Number"), grant, classNameId, tableId, classPk);
 		storeValue(getColumnId(tableId, "NewUserFormComplete"), "true", classNameId, tableId, classPk);
 
-
-		
-		return mapping.findForward(ActionConstants.COMMON_REFERER);
+		System.out.println("done Submitting form");
+//		return "common.referer_js.jsp";
+		return mapping.findForward(ActionConstants.COMMON_REFERER_JSP);
 	}
 	
 	private void storeValue(long columnId, String value, long classNameId, long tableId, long classPK){
 		ExpandoValue expandoValue = null;
-		
+		System.out.println("Storing value");
 		try {
 			expandoValue = ExpandoValueLocalServiceUtil.addValue(classNameId, tableId, columnId, classPK, value);
 		} catch (PortalException e) {
@@ -104,6 +115,7 @@ public class UpdateNewUserFormAction extends Action{
 		} catch (SystemException e) {
 			e.printStackTrace();
 		}
+		System.out.println("Done Storing value");
 	}
 	
 	private long getColumnId(long tableId, String columnName){

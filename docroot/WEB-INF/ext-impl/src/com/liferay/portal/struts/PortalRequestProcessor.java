@@ -85,7 +85,6 @@ import com.liferay.portlet.RenderRequestImpl;
 import com.liferay.portlet.RenderResponseFactory;
 import com.liferay.portlet.RenderResponseImpl;
 
-import edu.jhu.cvrg.utilities.setup.UserFieldCreator;
 
 import java.io.IOException;
 
@@ -724,6 +723,12 @@ public class PortalRequestProcessor extends TilesRequestProcessor {
 
 			return path;
 		}
+//CRJ 21 Feb 2014		
+		if (((remoteUser != null) || (user != null)) &&
+			path.equals(_PATH_PORTAL_UPDATE_NEW_USER_FORM)) {
+
+			return path;
+		}
 
 		// Authenticated users must still exist in the system
 
@@ -738,22 +743,7 @@ public class PortalRequestProcessor extends TilesRequestProcessor {
 
 			return _PATH_PORTAL_ERROR;
 		}
-
-		//CRJ 7/11/13 JHU
 		
-		if(path.equals(_PATH_PORTAL_UPDATE_NEW_USER_FORM)){
-			UserFieldCreator.createCustomFields();
-			return path;
-		}
-		
-		if(user != null){
-			
-			if(newUserFormRequired(user) && !hasSubmittedNewUserForm(user)) {
-				return _PATH_PORTAL_NEW_USER_FORM;	
-			}
-				
-		}
-
 		if (!path.equals(_PATH_PORTAL_JSON_SERVICE) &&
 			!path.equals(_PATH_PORTAL_RENDER_PORTLET) &&
 			!ParamUtil.getBoolean(request, "wsrp")) {
@@ -773,6 +763,20 @@ public class PortalRequestProcessor extends TilesRequestProcessor {
 
 				if (termsOfUseRequired) {
 					return _PATH_PORTAL_TERMS_OF_USE;
+				}
+			}
+			
+			System.out.println("Current path: " +  path);
+			
+			if (!path.equals(_PATH_PORTAL_JSON_SERVICE) &&
+				!path.equals(_PATH_PORTAL_RENDER_PORTLET) &&
+				!ParamUtil.getBoolean(request, "wsrp")) {
+				
+				if(user != null){
+					
+					if(newUserFormRequired(user) && !hasSubmittedNewUserForm(user)) {
+						return _PATH_PORTAL_NEW_USER_FORM;	
+					}
 				}
 			}
 
@@ -994,18 +998,19 @@ public class PortalRequestProcessor extends TilesRequestProcessor {
 		boolean result = false;
 			if(user.getExpandoBridge().getAttribute("NewUserFormComplete") != null){
 				result = (Boolean) user.getExpandoBridge().getAttribute("NewUserFormComplete");
-			}
+				System.out.println("New User Form complete:" + result);
+			}else{System.out.println("New User Form Complete variable is null.");}
 		return result;
-
 	}
 	
 	private boolean newUserFormRequired(User user){
+		System.out.println("Checking for New User Form required.");
 		boolean result = true;
 		if(user.getExpandoBridge().getAttribute("NewUserFormRequired") != null){
 			result = (Boolean) user.getExpandoBridge().getAttribute("NewUserFormRequired");
+			System.out.println("Result: " + result);
 		}
 		return result;
-
 	}
 
 	private static String _PATH_C = "/c";

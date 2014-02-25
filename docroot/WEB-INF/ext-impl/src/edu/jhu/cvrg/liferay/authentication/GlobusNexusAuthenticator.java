@@ -25,9 +25,12 @@ import org.apache.log4j.Logger;
 import com.liferay.portal.NoSuchUserException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.model.Role;
+import com.liferay.portal.model.RoleConstants;
 import com.liferay.portal.model.User;
 import com.liferay.portal.security.auth.AuthException;
 import com.liferay.portal.security.auth.Authenticator;
+import com.liferay.portal.service.RoleLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.util.PropsValues;
@@ -62,9 +65,8 @@ public class GlobusNexusAuthenticator implements Authenticator{
 	}
 
 	@Override
-	public int authenticateByScreenName(long companyId, String screenName,
-			String password, Map<String, String[]> headerMap,
-			Map<String, String[]> parameterMap) throws AuthException {
+	public int authenticateByScreenName(long companyId, String screenName, String password, Map<String, 
+			String[]> headerMap, Map<String, String[]> parameterMap) throws AuthException {
 		
 		logger.info("Authenticating by screenName");
 
@@ -146,9 +148,15 @@ public class GlobusNexusAuthenticator implements Authenticator{
 		try {
 			creatingUser = UserLocalServiceUtil.getUserByEmailAddress(companyId, creatingUserProperty);
 				
-			UserLocalServiceUtil.addUser(creatingUser.getUserId(), companyId, false, "test", "test", false, screenName, userEmail, 0L, "", Locale.US,
-					userName[0], "", userName[1], 0, 0, false, 0, 1,1970, "User", null, null, null,
-					null, false, new ServiceContext());
+			newUser = UserLocalServiceUtil.addUser(creatingUser.getUserId(), companyId, false, "test", "test", 
+					false, screenName, userEmail, 0L, "", Locale.US, userName[0], "", userName[1], 
+					0, 0, false, 0, 1,1970, "User", null, null, null, null, false, new ServiceContext());
+			
+			Role memberRole = RoleLocalServiceUtil.getRole(companyId, RoleConstants.SITE_MEMBER);
+			Role userRole = RoleLocalServiceUtil.getRole(companyId, RoleConstants.USER);
+			
+			long[] roles = {memberRole.getRoleId(), userRole.getRoleId()};
+			RoleLocalServiceUtil.setUserRoles(newUser.getUserId(), roles);
 		
 		} catch (PortalException e) {
 
